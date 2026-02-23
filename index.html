@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bulk Generator</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#25D366">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        :root {
+            --wa-green: #25D366;
+            --wa-dark: #128C7E;
+            --bg-color: #f0f2f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            padding-bottom: 60px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--wa-dark);
+            margin-bottom: 30px;
+        }
+
+        .pair-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            padding: 20px;
+            border-left: 5px solid var(--wa-green);
+        }
+
+        .pair-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #444;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .action-area {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        button.generate-btn {
+            background-color: var(--wa-green);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button.generate-btn:hover {
+            background-color: var(--wa-dark);
+        }
+
+        .results-container {
+            margin-top: 20px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            display: none;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .result-number {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-send { background-color: var(--wa-green); }
+        .btn-copy { background-color: #6c757d; }
+
+        .note {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        /* FOOTER STYLES */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+            background: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .footer a {
+            color: var(--wa-green);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>WhatsApp Campaign Generator</h1>
+    <p style="text-align:center; color:#666;">Enter a message and the specific numbers for that message below.</p>
+
+    <!-- SECTION 1 -->
+    <div class="pair-card" id="card-1">
+        <div class="pair-header">Campaign 1</div>
+        <div class="input-row">
+            <div class="col">
+                <label>Message Text</label>
+                <textarea id="msg-1" placeholder="Hello, this is offer 1..."></textarea>
+            </div>
+            <div class="col">
+                <label>Phone Numbers (One per line)</label>
+                <textarea id="nums-1" placeholder="15550001111&#10;15550002222"></textarea>
+                <p class="note">Include Country Code (e.g. 1 for USA, 91 for India)</p>
+            </div>
+        </div>
+        <div class="action-area">
+            <button class="generate-btn" onclick="processSection(1)">Generate Links for Campaign 1</button>
+        </div>
+        <div class="results-container" id="results-1"></div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="pair-card" id="card-2">
+        <div class="pair-header">Campaign 2</div>
+        <div class="input-row">
+            <div class="col">
+                <label>Message Text</label>
+                <textarea id="msg-2" placeholder="Hello, this is offer 2..."></textarea>
+            </div>
+            <div class="col">
+                <label>Phone Numbers (One per line)</label>
+                <textarea id="nums-2" placeholder="15550003333&#10;15550004444"></textarea>
+            </div>
+        </div>
+        <div class="action-area">
+            <button class="generate-btn" onclick="processSection(2)">Generate Links for Campaign 2</button>
+        </div>
+        <div class="results-container" id="results-2"></div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="pair-card" id="card-3">
+        <div class="pair-header">Campaign 3</div>
+        <div class="input-row">
+            <div class="col">
+                <label>Message Text</label>
+                <textarea id="msg-3" placeholder="Hello, this is offer 3..."></textarea>
+            </div>
+            <div class="col">
+                <label>Phone Numbers (One per line)</label>
+                <textarea id="nums-3" placeholder="15550005555"></textarea>
+            </div>
+        </div>
+        <div class="action-area">
+            <button class="generate-btn" onclick="processSection(3)">Generate Links for Campaign 3</button>
+        </div>
+        <div class="results-container" id="results-3"></div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="pair-card" id="card-4">
+        <div class="pair-header">Campaign 4</div>
+        <div class="input-row">
+            <div class="col">
+                <label>Message Text</label>
+                <textarea id="msg-4" placeholder="Hello, this is offer 4..."></textarea>
+            </div>
+            <div class="col">
+                <label>Phone Numbers (One per line)</label>
+                <textarea id="nums-4" placeholder="15550006666"></textarea>
+            </div>
+        </div>
+        <div class="action-area">
+            <button class="generate-btn" onclick="processSection(4)">Generate Links for Campaign 4</button>
+        </div>
+        <div class="results-container" id="results-4"></div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="pair-card" id="card-5">
+        <div class="pair-header">Campaign 5</div>
+        <div class="input-row">
+            <div class="col">
+                <label>Message Text</label>
+                <textarea id="msg-5" placeholder="Hello, this is offer 5..."></textarea>
+            </div>
+            <div class="col">
+                <label>Phone Numbers (One per line)</label>
+                <textarea id="nums-5" placeholder="15550007777"></textarea>
+            </div>
+        </div>
+        <div class="action-area">
+            <button class="generate-btn" onclick="processSection(5)">Generate Links for Campaign 5</button>
+        </div>
+        <div class="results-container" id="results-5"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Created By: Ganesh Eknath Raykar <br>
+        <a href="https://wa.me/919011271052" target="_blank">📞 Chat on WhatsApp: 9011271052</a>
+    </div>
+
+</div>
+
+<script>
+    function cleanNumber(num) {
+        return num.replace(/\D/g, '');
+    }
+
+    function processSection(id) {
+        const msgInput = document.getElementById(`msg-${id}`).value;
+        const numsInput = document.getElementById(`nums-${id}`).value;
+        const resultsDiv = document.getElementById(`results-${id}`);
+
+        if (!msgInput.trim()) {
+            alert(`Please enter a message for Campaign ${id}`);
+            return;
+        }
+        if (!numsInput.trim()) {
+            alert(`Please enter numbers for Campaign ${id}`);
+            return;
+        }
+
+        const encodedMsg = encodeURIComponent(msgInput);
+        const numberList = numsInput.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+
+        resultsDiv.innerHTML = '';
+        resultsDiv.style.display = 'block';
+
+        numberList.forEach(num => {
+            const cleanNum = cleanNumber(num);
+            if(cleanNum.length < 5) return;
+
+            const link = `https://wa.me/${cleanNum}?text=${encodedMsg}`;
+
+            const row = document.createElement('div');
+            row.className = 'result-item';
+            row.innerHTML = `
+                <span class="result-number">${cleanNum}</span>
+                <div class="btn-group">
+                    <button class="btn-sm btn-copy" onclick="copyText('${link}')">Copy Link</button>
+                    <a href="${link}" target="_blank" class="btn-sm btn-send">Open WhatsApp</a>
+                </div>
+            `;
+            resultsDiv.appendChild(row);
+        });
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Link copied!");
+        });
+    }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Error', err));
+        });
+    }
+</script>
+
+</body>
+</html>
